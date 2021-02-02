@@ -19,11 +19,16 @@ public class SQLSearchRequest implements Request {
     }
 
     public static class RestrictedSQLSearchRequestBuilder extends SQLSearchRequestBuilder {
+        private final AccessManager accessManager;
+
+        public RestrictedSQLSearchRequestBuilder(AccessManager accessManager) {
+            this.accessManager = accessManager;
+        }
 
         @Override
         public SQLSearchRequestBuilder withTableName(String tableName) {
-            if (tableName.equalsIgnoreCase("restricted")) {
-                throw new RuntimeException();
+            if (accessManager.isTableRestricted(tableName)) {
+                throw new RuntimeException("You don't have access to this table");
             }
             return super.withTableName(tableName);
         }

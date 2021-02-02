@@ -1,21 +1,17 @@
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.Map;
 
 public class Main {
 
     public static void main(String[] args) {
-        final String tableName = "users";
+        final String tableName = "restricted";
         final String[] columns = new String[] {"first_name", "last_name"};
-        final SortedMap<String, Boolean> orderMap = new TreeMap<>();
+        final Map<String, Boolean> orderMap = Map.of("firstName", true, "age", false);
 
-        orderMap.put("firstName", true);
-        orderMap.put("age", false);
+        var sqlSearchRequestDirector =
+                new SQLSearchRequestDirector(UserType.EXTERNAL, new AccessManagerImpl());
 
-        final Request request = new SQLSearchRequest.SQLSearchRequestBuilder()
-                .withColumns(columns)
-                .withOrderMap(orderMap)
-                .withTableName(tableName)
-                .build();
+        final Request request =
+                sqlSearchRequestDirector.createRequest(tableName, columns, orderMap);
 
         System.out.println(request.getQueryString());
     }
